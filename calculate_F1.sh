@@ -1,0 +1,3 @@
+#!/bin/bash
+
+awk -v OFS="\t" -v SV=$1 'BEGIN{Truth=0;Shared=0;Geno=0}{if($10~/0\/0/ || $10~/0\/1/ || $10~/1\/1/){Truth+=1;num=11;if($num~/0\/0/ || $num~/0\/1/ || $num~/1\/1/){Geno+=1;{match($10,/.\/./,m);match($num,/.\/./,test)}{if(m[0]==test[0]){Shared+=1}}}}}END{print "SVTYPE","Truth_num","Genotyping_num","Correct_num","Precision","Recall","F1","\n",SV,Truth,Geno,Shared,substr(Shared/Geno,1,6),substr(Shared/Truth,1,6),substr(2*(Shared/Geno)*(Shared/Truth)/((Shared/Geno)+(Shared/Truth)),1,6)}'|column -t
