@@ -94,7 +94,7 @@ zcat m*subreads.fasta.gz >> HG004_CLR.fasta
 
 (2) PB CCS data for HG002
 
-Copy the file names of HG002 PB CCS sequence data (available at ftp://ftp-trace.ncbi.nlm.nih.gov/ReferenceSamples/giab/data/AshkenazimTrio/HG002_NA24385_son/PacBio_CCS_15kb/) to seq_fq_id. txt
+Copy the file names of HG002 PB CCS sequence data (available at ftp://ftp-trace.ncbi.nlm.nih.gov/ReferenceSamples/giab/data/AshkenazimTrio/HG002_NA24385_son/PacBio_CCS_15kb/) to seq_fq_id. txt.
 
 ```
 data=seq_fq_id.txt
@@ -143,7 +143,7 @@ zcat m*subreads.fasta.gz >> HG007_CLR.fasta
 
 (5) PB CCS data for HG005
 
-Obtain SRA accession number (starting SRR) of HG005 PB CCS sequence data (available at https://www.ncbi.nlm.nih.gov/bioproject/PRJNA540706) and save them in the HG005_CCS_SRR.txt
+Obtain SRA accession number (starting SRR) of HG005 PB CCS sequence data (available at https://www.ncbi.nlm.nih.gov/bioproject/PRJNA540706) and save them in the HG005_CCS_SRR.txt.
 
 ```
 prefetch --output-directory . --option-file HG005_CCS_SRR.txt
@@ -255,10 +255,26 @@ perl -lane 'if(/#/){print}else{print join("\t",@F[0..8],$F[12])}' ${output_vcf} 
 (3) Sniffles
 
 ```
+#Before genotyping, SVs are divided into different types.
+sample=HG002_Tier1, HG002_Tier2, or HG005
+SVTYPE=INS, DEL, DUP, INV, or TRA
+vcf=HG002_Tier1.vcf, HG002_Tier2.vcf, or HG005_pbmm2_pbsv_5SV.vcf
+grep -E "#|${SVTYPE}" $vcf > ${sample}_${SVTYPE}.vcf
+
 #CLR/ONT
 sniffles -t ${thread} -m ${bam} -v ${output_vcf} --Ivcf ${input_vcf}
 #CCS
 sniffles --skip_parameter_estimation -t ${thread} -m ${bam} -v ${output_vcf} --Ivcf ${input_vcf}
+
+#After genotyping, the changed SV types are converted back.
+#INS
+sed -e 's/<DUP>/<INS>/g' -e 's/SVTYPE=DUP/SVTYPE=INS/g' -e 's/<DUP\/INS>/<INS>/g' -e 's/SVTYPE=DUP\/INS/SVTYPE=INS/g' ${sample}_${SVTYPE}.vcf > ${sample}_${SVTYPE}_v.vcf
+#INV
+sed -e 's/SVTYPE=INVDUP/SVTYPE=INV/g' -e 's/SVTYPE=INV\/INVDUP/SVTYPE=INV/g' -e 's/<INVDUP>/<INV>/g' -e 's/<INV\/INVDUP>/<INV>/g' ${sample}_${SVTYPE}.vcf > ${sample}_${SVTYPE}_v.vcf
+#DUP
+sed -e 's/<INS>/<DUP>/g' -e 's/SVTYPE=INS/SVTYPE=DUP/g' -e 's/<DUP\/INS>/<DUP>/g' -e 's/SVTYPE=DUP\/INS/SVTYPE=DUP/g' ${sample}_${SVTYPE}.vcf > ${sample}_${SVTYPE}_v.vcf
+#TRA
+sed -e 's/<INV>/<TRA>/g' -e 's/SVTYPE=INV/SVTYPE=TRA/g' ${sample}_${SVTYPE}.vcf > ${sample}_${SVTYPE}_v.vcf
 ```
 
 (4) SVJedi
@@ -289,7 +305,7 @@ ${name}.txt: File listing paths to all variant files (on separate lines). The fi
 #SV merging
 /The_installation_path/Jasmine-1.0.1/run.sh max_dist=1000 min_support=0 threads=2 --keep_var_ids --ignore_strand --output_genotypes file_list=${name}.txt out_file=${name}.vcf
 
-#Generate precision, recall, and F1
+#Generate precision, recall, and F1.
 SVTYPE=INS, DEL, DUP, INV, or TRA
 grep "SVTYPE=$SVTYPE" ${name}.vcf|./calculate_F1.sh $SVTYPE
 ```
