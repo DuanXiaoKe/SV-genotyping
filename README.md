@@ -291,10 +291,13 @@ python3 svjedi.py -t ${thread} -d ont -ms 3 -v ${input_vcf} -r ${reference} -i $
 (5) VaPoR
 
 ```
-#Vcftobed:
-perl -lane 'if(/SVTYPE=INS;.*?SVLEN=([-|\d]+);.*?END=(\d+)/){$num+=1;print "$F[0]\t$F[1]\t$F[1]\tSV_$num\tINS_$F[4]"}elsif(/SVTYPE=([A-Z]+);.*?SVLEN=([-|\d]+);.*?END=(\d+)/){$num+=1;print "$F[0]\t$F[1]\t$3\tSV_$num\t$1"}' ${input_vcf} > ${output_bed}
+#VCFtoBED:
+perl -lane 'if(/SVTYPE=INS;.*?SVLEN=([-|\d]+);.*?END=(\d+)/){$num+=1;print "$F[0]\t$F[1]\t$F[1]\tSV_$num\tINS_$F[4]"}elsif(/SVTYPE=([A-Z]+);.*?SVLEN=([-|\d]+);.*?END=(\d+)/){$num+=1;print "$F[0]\t$F[1]\t$3\tSV_$num\t$1"}' ${input_vcf} > ${vapor_bed}
 #CLR/CCS/ONT:
-vapor bed --sv-input ${input_bed} --output-path ./vapor_bed/ --output-file ${output_file} --reference ${reference} --pacbio-input ${bam}
+vapor bed --sv-input ${vapor_bed} --output-path ./vapor_bed/ --output-file ${vapor_output} --reference ${reference} --pacbio-input ${bam}
+#BEDtoVCF
+vcf=sim_output_5SV.vcf, HG002_Tier1.vcf, HG002_Tier2.vcf, or HG005_pbmm2_pbsv_5SV.vcf
+cat <(paste <(grep -v "#" $vcf) <(grep -v "CHR" ${vapor_output})|sed 's/NA/\.\/\./') > ${output_vcf}
 ```
 
 **5.  Evaluation of SV genotyping methods**
