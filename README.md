@@ -1,6 +1,38 @@
 # SV-genotyping
 Evaluation of long-read SV genotyping methods
 
+## Tool requirements
+
+SURVIVOR v1.0.7: https://github.com/fritzsedlazeck/SURVIVOR
+
+sratoolkit.2.10.5-centos_linux64: https://github.com/ncbi/sra-tools
+
+pbmm2 v1.4.0: https://github.com/PacificBiosciences/pbmm2
+
+pbsv v2.4.0: https://github.com/PacificBiosciences/pbsv
+
+bcftools v1.14: https://github.com/samtools/bcftools
+
+minimap2 v2.17-r941: https://github.com/lh3/minimap2
+
+ngmlr v0.2.7: https://github.com/philres/ngmlr
+
+samtools v1.10: https://github.com/samtools/samtools
+
+cuteSV v1.0.11: https://github.com/tjiangHIT/cuteSV
+
+LRcaller v0.2: https://github.com/DecodeGenetics/LRcaller
+
+Sniffles v1.0.12a: https://github.com/fritzsedlazeck/Sniffles
+
+SVJedi v1.1.0: https://github.com/llecompte/SVJedi
+
+VaPoR: https://github.com/mills-lab/vapor
+
+Jasmine v1.0.1: https://github.com/mkirsche/Jasmine
+
+bedtools v2.30.0: https://github.com/arq5x/bedtools2
+
 **1. Generation of simulated data**
 
 ```
@@ -122,9 +154,13 @@ cat *seq_data > HG005_CCS.seq_data
 ```
 wget -c https://ftp-trace.ncbi.nlm.nih.gov/giab/ftp/data/AshkenazimTrio/analysis/NIST_SVs_Integration_v0.6/HG002_SVs_Tier1_v0.6.vcf.gz
 #HG002 Tier 1
-awk -v OFS="\t" '{if(/#/){print}else if($7=="PASS"){print}}' <(zcat HG002_SVs_Tier1_v0.6.vcf.gz) > HG002_Tier1.vcf
+awk -v OFS="\t" '{if(/#/){print}else if($7=="PASS"){print}}' <(zcat HG002_SVs_Tier1_v0.6.vcf.gz) > HG002_Tier1_v.vcf
+vcf=HG002_Tier1_v.vcf
+cat <(grep "#" $vcf) <(bcftools query -f '%CHROM\t%POS\t%ID\t%REF\t%ALT\t%QUAL\t%FILTER\tSVTYPE=%SVTYPE;SVLEN=%SVLEN;END=%END\tGT\t[%GT]\n' $vcf) > HG002_Tier1.vcf
 #HG002 Tier 2
-awk -v OFS="\t" '{if(/#/){print}else if($7=="ClusteredCalls"){print}}' <(zcat HG002_SVs_Tier1_v0.6.vcf.gz)|grep -E -v "\./" > HG002_Tier2.vcf
+awk -v OFS="\t" '{if(/#/){print}else if($7=="ClusteredCalls"){print}}' <(zcat HG002_SVs_Tier1_v0.6.vcf.gz)|grep -E -v "\./" > HG002_Tier2_v.vcf
+vcf=HG002_Tier2_v.vcf
+cat <(grep "#" $vcf) <(bcftools query -f '%CHROM\t%POS\t%ID\t%REF\t%ALT\t%QUAL\t%FILTER\tSVTYPE=%SVTYPE;SVLEN=%SVLEN;END=%END\tGT\t[%GT]\n' $vcf) > HG002_Tier2.vcf
 ```
 
 (7) HG005 SV set
