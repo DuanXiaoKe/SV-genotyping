@@ -33,6 +33,8 @@ Jasmine v1.0.1: https://github.com/mkirsche/Jasmine
 
 bedtools v2.30.0: https://github.com/arq5x/bedtools2
 
+## Commands for comprehensive evaluation
+
 **1. Generation of simulated data**
 
 ```
