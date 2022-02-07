@@ -354,7 +354,7 @@ SVTYPE=INS, DEL, DUP, INV, or TRA
 TR=human_hs37d5.trf.bed
 
 #TR
-grep -E "#|SVTYPE=$SVTYPE" $vcf| bedtools intersect -a - -b $TR|sort|uniq|./calculate_F1.sh $SVTYPE
+grep -E "#|SVTYPE=$SVTYPE" $vcf|bedtools intersect -a - -b $TR|sort|uniq|./calculate_F1.sh $SVTYPE
 
 #Non-TR
 grep -E "#|SVTYPE=$SVTYPE" $vcf|bedtools intersect -a - -b $TR -v|sort|uniq|./calculate_F1.sh $SVTYPE
