@@ -2,29 +2,19 @@
 
 import sys
 import random as rd
-#import numpy as np
 from pyfaidx import Fasta
 import fileinput
 import re
 
-# Load reference genome
 fa = Fasta(sys.argv[1])
-#ATCG = np.array(["A", "T", "C", "G"])
-#error_seq = "".join(ATCG[[rd.randint(0,3) for i in range(size)]])
-#error_num = rd.randint(1,3)
-#error_seq = "".join(ATCG[[rd.randint(0,3) for i in range(error_num)]])
-
 size=int(sys.argv[3])
-
 out_file = open(sys.argv[4], 'w')
 
 for line in fileinput.input(sys.argv[2]):
-    # if header, print and got to next line
     if line[0] == '#':
         line = line.rstrip()
         print(line,sep="\t",file=out_file)
         continue
-    # else parse variant record
     line = line.rstrip().split('\t')
     chrom = line[0]
     pos = int(line[1])
