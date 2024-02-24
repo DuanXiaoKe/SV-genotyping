@@ -1,4 +1,4 @@
-# SV-genotyping
+# SV genotyping
 Evaluation of long-read SV genotyping methods
 
 ## Tool requirements
